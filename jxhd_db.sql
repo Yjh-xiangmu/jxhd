@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 08/05/2026 19:37:08
+ Date: 09/05/2026 00:04:06
 */
 
 SET NAMES utf8mb4;
@@ -107,6 +107,7 @@ CREATE TABLE `sys_student`  (
 INSERT INTO `sys_student` VALUES (1, '张小明', 1, '2020-03-15', 1, NULL, NULL, 1, '2026-05-08 18:30:09', '2026-05-08 18:30:09');
 INSERT INTO `sys_student` VALUES (2, '李艺彤', 2, '2020-07-22', 2, NULL, NULL, 1, '2026-05-08 18:30:09', '2026-05-08 18:30:09');
 INSERT INTO `sys_student` VALUES (3, '王浩宇', 1, '2019-11-05', 1, NULL, NULL, 1, '2026-05-08 18:30:09', '2026-05-08 18:30:09');
+INSERT INTO `sys_student` VALUES (4, '小小', 1, '2024-01-08', NULL, NULL, '', 1, '2026-05-08 20:07:42', '2026-05-08 20:07:42');
 
 -- ----------------------------
 -- Table structure for sys_teacher_class

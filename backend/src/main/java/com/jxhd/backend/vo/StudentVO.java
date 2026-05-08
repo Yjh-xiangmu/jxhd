@@ -16,4 +16,5 @@ public class StudentVO {
     private String remark;
     private Integer status;
     private LocalDateTime createTime;
+    private Integer parentCount;
 }

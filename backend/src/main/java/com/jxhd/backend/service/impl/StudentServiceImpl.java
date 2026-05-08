@@ -51,6 +51,15 @@ public class StudentServiceImpl implements StudentService {
                 classMapper.selectBatchIds(classIds).stream()
                         .collect(Collectors.toMap(SysClass::getId, SysClass::getClassName));
 
+        // batch count approved parent bindings per student
+        List<Long> studentIds = rawPage.getRecords().stream().map(Student::getId).collect(Collectors.toList());
+        Map<Long, Long> parentCountMap = studentIds.isEmpty() ? Map.of() :
+                parentStudentMapper.selectList(
+                        new LambdaQueryWrapper<ParentStudent>()
+                                .in(ParentStudent::getStudentId, studentIds)
+                                .eq(ParentStudent::getStatus, 1))
+                        .stream().collect(Collectors.groupingBy(ParentStudent::getStudentId, Collectors.counting()));
+
         return rawPage.convert(s -> {
             StudentVO vo = new StudentVO();
             vo.setId(s.getId());
@@ -64,6 +73,7 @@ public class StudentServiceImpl implements StudentService {
             vo.setRemark(s.getRemark());
             vo.setStatus(s.getStatus());
             vo.setCreateTime(s.getCreateTime());
+            vo.setParentCount(parentCountMap.getOrDefault(s.getId(), 0L).intValue());
             return vo;
         });
     }

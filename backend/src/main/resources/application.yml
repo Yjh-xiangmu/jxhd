@@ -7,3 +7,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/jxhd_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+
+upload:
+  path: uploads/

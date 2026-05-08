@@ -18,6 +18,7 @@ const router = createRouter({
         { path: 'dashboard', component: () => import('../pages/admin/Dashboard.vue') },
         { path: 'users',     component: () => import('../pages/admin/Users.vue') },
         { path: 'classes',   component: () => import('../pages/admin/Classes.vue') },
+        { path: 'schedule',  component: () => import('../pages/admin/Schedule.vue') },
         { path: 'news',      component: () => import('../pages/admin/News.vue') },
         { path: 'forum',     component: () => import('../pages/admin/Forum.vue') },
         { path: 'logs',      component: () => import('../pages/admin/Logs.vue') },

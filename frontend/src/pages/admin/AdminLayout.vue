@@ -25,6 +25,9 @@
         <router-link to="/admin/classes" active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
           <School class="w-5 h-5 shrink-0" /> 基础班级数据
         </router-link>
+        <router-link to="/admin/schedule" active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
+          <CalendarDays class="w-5 h-5 shrink-0" /> 课表管理
+        </router-link>
         <router-link to="/admin/news" active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
           <Newspaper class="w-5 h-5 shrink-0" /> 校园资讯
         </router-link>
@@ -61,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, Users, School, Newspaper, MessageSquareWarning, ShieldAlert, LogOut } from 'lucide-vue-next'
+import { LayoutDashboard, Users, School, Newspaper, MessageSquareWarning, ShieldAlert, LogOut, CalendarDays } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { logout } from '../../api/auth'
 

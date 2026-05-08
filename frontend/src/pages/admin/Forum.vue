@@ -1,10 +1,6 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-96 text-[#A09E94]">
-    <MessageSquareWarning class="w-16 h-16 mb-4 opacity-20" />
-    <h2 class="text-xl font-medium">论坛监管</h2>
-    <p class="text-sm mt-2">功能开发中，敬请期待</p>
-  </div>
+  <ForumView :is-admin="true" title="论坛监管" />
 </template>
 <script setup lang="ts">
-import { MessageSquareWarning } from 'lucide-vue-next'
+import ForumView from '../../components/ForumView.vue'
 </script>
