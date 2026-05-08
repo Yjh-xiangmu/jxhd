@@ -1,5 +1,7 @@
 package com.jxhd.backend.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("sys_parent_student")
 public class ParentStudent {
+    @TableId(type = IdType.AUTO)
     private Long id;
     private Long parentId;
     private Long studentId;
