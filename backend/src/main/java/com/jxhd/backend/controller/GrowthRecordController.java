@@ -10,7 +10,9 @@ import com.jxhd.backend.entity.User;
 import com.jxhd.backend.mapper.ParentStudentMapper;
 import com.jxhd.backend.mapper.TeacherClassMapper;
 import com.jxhd.backend.service.GrowthRecordService;
+import com.jxhd.backend.service.LogService;
 import com.jxhd.backend.vo.GrowthRecordVO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ public class GrowthRecordController {
     private final GrowthRecordService growthRecordService;
     private final TeacherClassMapper teacherClassMapper;
     private final ParentStudentMapper parentStudentMapper;
+    private final LogService logService;
 
     @Value("${upload.path:uploads/}")
     private String uploadPath;
@@ -127,7 +130,7 @@ public class GrowthRecordController {
     // ── 教师：发布动态 ────────────────────────────────────────────────────────
 
     @PostMapping
-    public Result<Void> add(@RequestBody GrowthRecordDTO dto, HttpSession session) {
+    public Result<Void> add(@RequestBody GrowthRecordDTO dto, HttpSession session, HttpServletRequest request) {
         User teacher = (User) session.getAttribute("currentUser");
         if (teacher == null) return Result.error(401, "未登录");
         if (!"teacher".equals(teacher.getRole())) return Result.error(403, "仅教师可发布");
@@ -139,16 +142,18 @@ public class GrowthRecordController {
         if (dto.getStudentId() == null) return Result.error(400, "请选择幼儿");
 
         growthRecordService.add(dto, teacher.getId(), classId);
+        logService.record(teacher, "成长记录", "发布动态", "幼儿ID：" + dto.getStudentId(), request);
         return Result.success(null);
     }
 
     // ── 教师：删除动态 ────────────────────────────────────────────────────────
 
     @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, HttpSession session) {
+    public Result<Void> delete(@PathVariable Long id, HttpSession session, HttpServletRequest request) {
         User teacher = (User) session.getAttribute("currentUser");
         if (teacher == null) return Result.error(401, "未登录");
         growthRecordService.delete(id, teacher.getId());
+        logService.record(teacher, "成长记录", "删除动态", "记录ID：" + id, request);
         return Result.success(null);
     }
 

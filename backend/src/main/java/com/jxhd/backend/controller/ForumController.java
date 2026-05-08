@@ -13,9 +13,14 @@ import com.jxhd.backend.mapper.UserMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +35,9 @@ public class ForumController {
     private final ForumReplyMapper replyMapper;
     private final UserMapper userMapper;
 
+    @Value("${upload.path:uploads/}")
+    private String uploadPath;
+
     @Data
     static class PostVO {
         private Long id;
@@ -38,6 +46,7 @@ public class ForumController {
         private String authorRole;
         private String title;
         private String content;
+        private java.util.List<String> images;
         private Integer isPinned;
         private Integer replyCount;
         private LocalDateTime createTime;
@@ -52,6 +61,27 @@ public class ForumController {
         private String authorRole;
         private String content;
         private LocalDateTime createTime;
+    }
+
+    // ── 图片上传 ──────────────────────────────────────────────────────────────
+
+    @PostMapping("/upload-image")
+    public Result<String> uploadImage(@RequestParam("file") MultipartFile file, HttpSession session) {
+        if (session.getAttribute("currentUser") == null) return Result.error(401, "未登录");
+        if (file.isEmpty()) return Result.error(400, "文件为空");
+        String original = file.getOriginalFilename();
+        String ext = (original != null && original.contains("."))
+                ? original.substring(original.lastIndexOf('.')) : ".jpg";
+        String filename = UUID.randomUUID().toString().replace("-", "") + ext;
+        String absDir = Paths.get(System.getProperty("user.dir"), uploadPath).toAbsolutePath().toString();
+        File dir = new File(absDir);
+        if (!dir.exists()) dir.mkdirs();
+        try {
+            file.transferTo(new File(dir, filename));
+        } catch (IOException e) {
+            return Result.error(500, "文件保存失败: " + e.getMessage());
+        }
+        return Result.success("/uploads/" + filename);
     }
 
     // ── 帖子列表（分页）──────────────────────────────────────────────────────
@@ -104,20 +134,24 @@ public class ForumController {
     // ── 发帖 ─────────────────────────────────────────────────────────────────
 
     @PostMapping("/posts")
-    public Result<Void> addPost(@RequestBody Map<String, String> body, HttpSession session) {
+    public Result<Void> addPost(@RequestBody Map<String, Object> body, HttpSession session) {
         User user = getUser(session);
         if (user == null) return Result.error(401, "未登录");
 
-        String title   = body.getOrDefault("title", "").trim();
-        String content = body.getOrDefault("content", "").trim();
+        String title   = body.getOrDefault("title", "").toString().trim();
+        String content = body.getOrDefault("content", "").toString().trim();
         if (!StringUtils.hasText(title))   return Result.error(400, "标题不能为空");
         if (!StringUtils.hasText(content)) return Result.error(400, "内容不能为空");
+
+        @SuppressWarnings("unchecked")
+        List<String> images = body.get("images") instanceof List ? (List<String>) body.get("images") : List.of();
 
         ForumPost post = new ForumPost();
         post.setAuthorId(user.getId());
         post.setAuthorRole(user.getRole());
         post.setTitle(title);
         post.setContent(content);
+        post.setImages(images.isEmpty() ? null : images);
         post.setIsPinned(0);
         post.setReplyCount(0);
         post.setCreateTime(LocalDateTime.now());
@@ -232,6 +266,7 @@ public class ForumController {
         vo.setAuthorRole(roleLabel(p.getAuthorRole()));
         vo.setTitle(p.getTitle());
         vo.setContent(p.getContent());
+        vo.setImages(p.getImages());
         vo.setIsPinned(p.getIsPinned());
         vo.setReplyCount(p.getReplyCount());
         vo.setCreateTime(p.getCreateTime());

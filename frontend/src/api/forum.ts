@@ -6,7 +6,13 @@ export const getForumPosts = (params?: { pageNum?: number; pageSize?: number; ke
 export const getPostDetail = (id: number | string) =>
   request.get(`/api/forum/posts/${id}`)
 
-export const addPost = (data: { title: string; content: string }) =>
+export const uploadForumImage = (file: File) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  return request.post('/api/forum/upload-image', fd)
+}
+
+export const addPost = (data: { title: string; content: string; images?: string[] }) =>
   request.post('/api/forum/posts', data)
 
 export const deletePost = (id: number | string) =>

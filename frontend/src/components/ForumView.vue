@@ -32,7 +32,6 @@
         @click="openPost(post)"
         class="bg-white rounded-2xl border border-[#EFE9E1] px-5 py-4 cursor-pointer hover:shadow-sm hover:border-[#5A5A40]/20 transition-all">
         <div class="flex items-start gap-3">
-          <!-- 置顶图标 -->
           <Pin v-if="post.isPinned === 1" class="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap mb-1">
@@ -51,6 +50,9 @@
               <span>{{ formatTime(post.createTime) }}</span>
               <span class="flex items-center gap-1">
                 <MessageCircle class="w-3 h-3" /> {{ post.replyCount }} 回复
+              </span>
+              <span v-if="post.images && post.images.length > 0" class="flex items-center gap-1">
+                <ImageIcon class="w-3 h-3" /> {{ post.images.length }} 图
               </span>
             </div>
           </div>
@@ -85,7 +87,6 @@
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <!-- 置顶按钮（仅管理员） -->
             <button v-if="isAdmin" @click="handlePin(detail.post)"
               class="h-8 px-3 rounded-xl border text-xs font-bold transition-colors"
               :class="detail.post?.isPinned === 1
@@ -93,7 +94,6 @@
                 : 'border-[#EFE9E1] text-[#7A7A6A] hover:bg-[#F5F2ED]'">
               {{ detail.post?.isPinned === 1 ? '取消置顶' : '置顶' }}
             </button>
-            <!-- 删除（本人或管理员） -->
             <button v-if="canDelete(detail.post)"
               @click="deleteCurrentPost"
               class="h-8 px-3 rounded-xl border border-red-200 text-red-400 text-xs font-bold hover:bg-red-50 transition-colors">
@@ -108,6 +108,17 @@
         <!-- 帖子内容 -->
         <div class="px-7 py-5 border-b border-[#F5F2ED]">
           <p class="text-sm text-[#333322] leading-relaxed whitespace-pre-wrap">{{ detail.post?.content }}</p>
+          <!-- 图片 -->
+          <div v-if="detail.post?.images && detail.post.images.length > 0"
+            class="mt-4 grid gap-2"
+            :class="detail.post.images.length === 1 ? 'grid-cols-1' : detail.post.images.length <= 4 ? 'grid-cols-2' : 'grid-cols-3'">
+            <img v-for="(img, i) in detail.post.images" :key="i"
+              :src="imgUrl(img)"
+              @click="openLightbox(detail.post.images, i)"
+              class="w-full rounded-xl object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              :class="detail.post.images.length === 1 ? 'max-h-64' : 'h-28'"
+              alt="" />
+          </div>
         </div>
 
         <!-- 回复列表 -->
@@ -116,8 +127,7 @@
             {{ detail.replies.length }} 条回复
           </p>
           <div v-if="detail.replies.length === 0" class="text-center py-6 text-xs text-[#A09E94]">暂无回复</div>
-          <div v-for="r in detail.replies" :key="r.id"
-            class="flex items-start gap-3">
+          <div v-for="r in detail.replies" :key="r.id" class="flex items-start gap-3">
             <div class="w-8 h-8 rounded-full bg-[#EFE9E1] flex items-center justify-center text-[#5A5A40] font-bold text-xs shrink-0">
               {{ (r.authorName || '?').charAt(0) }}
             </div>
@@ -150,9 +160,9 @@
 
     <!-- 发帖弹窗 -->
     <div v-if="newPost.show" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl">
-        <div class="px-7 py-5 bg-[#F5F2ED] border-b border-[#EFE9E1] rounded-t-3xl flex items-center justify-between">
-          <h4 class="text-base font-bold text-[#5A5A40]">发新帖</h4>
+      <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="px-7 py-5 bg-[#F5F2ED] border-b border-[#EFE9E1] rounded-t-3xl flex items-center justify-between sticky top-0">
+          <h4 class="text-base font-bold text-[#5A5A40]">{{ newPost.modalTitle || '发新帖' }}</h4>
           <button @click="newPost.show = false"><X class="w-5 h-5 text-[#A09E94]" /></button>
         </div>
         <div class="p-7 space-y-4">
@@ -166,6 +176,31 @@
             <textarea v-model="newPost.content" rows="5" placeholder="写下你想分享的内容..."
               class="w-full px-3 py-2 rounded-xl border border-[#EFE9E1] text-sm outline-none resize-none focus:border-[#5A5A40]" />
           </div>
+          <!-- 图片上传 -->
+          <div>
+            <label class="text-xs font-bold text-[#A09E94] uppercase tracking-wider mb-2 block">
+              附图（最多9张）
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="(img, i) in newPost.images" :key="i"
+                class="relative w-20 h-20 rounded-xl overflow-hidden border border-[#EFE9E1]">
+                <img :src="imgUrl(img)" class="w-full h-full object-cover" alt="" />
+                <button @click="newPost.images.splice(i, 1)"
+                  class="absolute top-0.5 right-0.5 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center">
+                  <X class="w-3 h-3 text-white" />
+                </button>
+              </div>
+              <label v-if="newPost.images.length < 9"
+                class="w-20 h-20 rounded-xl border-2 border-dashed border-[#EFE9E1] flex flex-col items-center justify-center cursor-pointer hover:border-[#5A5A40] transition-colors">
+                <Plus class="w-5 h-5 text-[#A09E94]" />
+                <span class="text-[10px] text-[#A09E94] mt-1">
+                  {{ newPost.uploading ? '上传中' : '添加' }}
+                </span>
+                <input type="file" accept="image/*" class="hidden" :disabled="newPost.uploading"
+                  @change="uploadNewPostImage" />
+              </label>
+            </div>
+          </div>
         </div>
         <div class="px-7 pb-7 flex gap-3">
           <button @click="newPost.show = false"
@@ -177,16 +212,46 @@
         </div>
       </div>
     </div>
+
+    <!-- 灯箱 -->
+    <div v-if="lightbox.show" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[60]"
+      @click="lightbox.show = false">
+      <button class="absolute top-4 right-4 text-white/70 hover:text-white" @click="lightbox.show = false">
+        <X class="w-7 h-7" />
+      </button>
+      <button v-if="lightbox.index > 0" @click.stop="lightbox.index--"
+        class="absolute left-4 text-white/70 hover:text-white p-2">
+        <ChevronLeft class="w-8 h-8" />
+      </button>
+      <img :src="imgUrl(lightbox.images[lightbox.index])"
+        class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl" @click.stop alt="" />
+      <button v-if="lightbox.index < lightbox.images.length - 1" @click.stop="lightbox.index++"
+        class="absolute right-4 text-white/70 hover:text-white p-2">
+        <ChevronRight class="w-8 h-8" />
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Plus, MessageSquare, MessageCircle, X, Pin, Trash2 } from 'lucide-vue-next'
-import { getForumPosts, getPostDetail, addPost, deletePost, togglePin, addReply, deleteReply } from '../api/forum'
+import { Plus, MessageSquare, MessageCircle, X, Pin, Trash2, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { getForumPosts, getPostDetail, addPost, deletePost, togglePin, addReply, deleteReply, uploadForumImage } from '../api/forum'
 import request from '../utils/request'
 
+const API_BASE = 'http://localhost:8080'
+
 const props = defineProps<{ isAdmin?: boolean; title?: string }>()
+
+// Exposed method so parent pages can open the new-post modal with prefilled data
+const openNewPostWith = (opts: { title?: string; content?: string; images?: string[] }) => {
+  newPost.title      = opts.title   ?? ''
+  newPost.content    = opts.content ?? ''
+  newPost.images     = opts.images  ? [...opts.images] : []
+  newPost.modalTitle = opts.title ? '发布活动总结' : '发新帖'
+  newPost.show       = true
+}
+defineExpose({ openNewPostWith })
 
 const loading  = ref(false)
 const posts    = ref<any[]>([])
@@ -206,7 +271,28 @@ const detail = reactive({
 const replyContent = ref('')
 const replying = ref(false)
 
-const newPost = reactive({ show: false, title: '', content: '', submitting: false })
+const newPost = reactive({
+  show: false,
+  modalTitle: '',
+  title: '',
+  content: '',
+  images: [] as string[],
+  uploading: false,
+  submitting: false,
+})
+
+const lightbox = reactive({ show: false, images: [] as string[], index: 0 })
+
+function imgUrl(path: string) {
+  if (!path) return ''
+  return path.startsWith('http') ? path : API_BASE + path
+}
+
+function openLightbox(images: string[], index: number) {
+  lightbox.images = images
+  lightbox.index  = index
+  lightbox.show   = true
+}
 
 async function fetchPosts() {
   loading.value = true
@@ -265,9 +351,24 @@ async function handlePin(post: any) {
 }
 
 function openNewPost() {
-  newPost.title   = ''
-  newPost.content = ''
-  newPost.show    = true
+  newPost.title      = ''
+  newPost.content    = ''
+  newPost.images     = []
+  newPost.modalTitle = ''
+  newPost.show       = true
+}
+
+async function uploadNewPostImage(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  newPost.uploading = true
+  try {
+    const res: any = await uploadForumImage(file)
+    newPost.images.push(res.data)
+  } finally {
+    newPost.uploading = false
+    ;(e.target as HTMLInputElement).value = ''
+  }
 }
 
 async function submitPost() {
@@ -275,7 +376,7 @@ async function submitPost() {
   if (!newPost.content.trim()) { alert('请填写内容'); return }
   newPost.submitting = true
   try {
-    await addPost({ title: newPost.title, content: newPost.content })
+    await addPost({ title: newPost.title, content: newPost.content, images: newPost.images })
     newPost.show = false
     pageNum.value = 1
     fetchPosts()
