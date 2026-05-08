@@ -10,6 +10,8 @@ import com.jxhd.backend.entity.User;
 import com.jxhd.backend.mapper.ForumPostMapper;
 import com.jxhd.backend.mapper.ForumReplyMapper;
 import com.jxhd.backend.mapper.UserMapper;
+import com.jxhd.backend.service.LogService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class ForumController {
     private final ForumPostMapper postMapper;
     private final ForumReplyMapper replyMapper;
     private final UserMapper userMapper;
+    private final LogService logService;
 
     @Value("${upload.path:uploads/}")
     private String uploadPath;
@@ -134,7 +137,7 @@ public class ForumController {
     // ── 发帖 ─────────────────────────────────────────────────────────────────
 
     @PostMapping("/posts")
-    public Result<Void> addPost(@RequestBody Map<String, Object> body, HttpSession session) {
+    public Result<Void> addPost(@RequestBody Map<String, Object> body, HttpSession session, HttpServletRequest request) {
         User user = getUser(session);
         if (user == null) return Result.error(401, "未登录");
 
@@ -156,13 +159,16 @@ public class ForumController {
         post.setReplyCount(0);
         post.setCreateTime(LocalDateTime.now());
         postMapper.insert(post);
+
+        String module = title.startsWith("【活动总结】") ? "活动总结" : "论坛";
+        logService.record(user, module, "发布帖子", "标题：" + title, request);
         return Result.success(null);
     }
 
     // ── 删除帖子（本人或管理员）────────────────────────────────────────────────
 
     @DeleteMapping("/posts/{id}")
-    public Result<Void> deletePost(@PathVariable Long id, HttpSession session) {
+    public Result<Void> deletePost(@PathVariable Long id, HttpSession session, HttpServletRequest request) {
         User user = getUser(session);
         if (user == null) return Result.error(401, "未登录");
         ForumPost post = postMapper.selectById(id);
@@ -171,6 +177,7 @@ public class ForumController {
             return Result.error(403, "无权删除");
         replyMapper.delete(new LambdaQueryWrapper<ForumReply>().eq(ForumReply::getPostId, id));
         postMapper.deleteById(id);
+        logService.record(user, "论坛", "删除帖子", "标题：" + post.getTitle(), request);
         return Result.success(null);
     }
 
@@ -193,7 +200,7 @@ public class ForumController {
     @PostMapping("/posts/{id}/replies")
     public Result<Void> addReply(@PathVariable Long id,
                                   @RequestBody Map<String, String> body,
-                                  HttpSession session) {
+                                  HttpSession session, HttpServletRequest request) {
         User user = getUser(session);
         if (user == null) return Result.error(401, "未登录");
 
@@ -211,16 +218,16 @@ public class ForumController {
         reply.setCreateTime(LocalDateTime.now());
         replyMapper.insert(reply);
 
-        // 更新回复数冗余字段
         post.setReplyCount(post.getReplyCount() + 1);
         postMapper.updateById(post);
+        logService.record(user, "论坛", "发表回复", "帖子：" + post.getTitle(), request);
         return Result.success(null);
     }
 
     // ── 删除回复 ──────────────────────────────────────────────────────────────
 
     @DeleteMapping("/replies/{id}")
-    public Result<Void> deleteReply(@PathVariable Long id, HttpSession session) {
+    public Result<Void> deleteReply(@PathVariable Long id, HttpSession session, HttpServletRequest request) {
         User user = getUser(session);
         if (user == null) return Result.error(401, "未登录");
         ForumReply reply = replyMapper.selectById(id);
@@ -234,6 +241,7 @@ public class ForumController {
             post.setReplyCount(post.getReplyCount() - 1);
             postMapper.updateById(post);
         }
+        logService.record(user, "论坛", "删除回复", "帖子ID：" + reply.getPostId(), request);
         return Result.success(null);
     }
 

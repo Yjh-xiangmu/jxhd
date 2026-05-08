@@ -9,7 +9,7 @@
           <h1 class="text-xl font-bold tracking-tight text-[#5A5A40] uppercase leading-none">
             Smart<span class="font-light opacity-60">Kiddy</span>
           </h1>
-          <p class="text-[10px] text-[#A09E94] font-medium mt-1">张小明妈妈</p>
+          <p class="text-[10px] text-[#A09E94] font-medium mt-1">{{ displayName }}</p>
         </div>
       </div>
 
@@ -46,8 +46,10 @@
       <header class="h-16 bg-white border-b border-[#EFE9E1] flex items-center justify-between px-8 shrink-0 shadow-sm">
         <h2 class="text-xl font-serif italic text-[#5A5A40]">家长空间</h2>
         <div class="flex items-center gap-3 border-l pl-6 border-[#EFE9E1]">
-          <p class="text-xs font-bold leading-none text-[#5A5A40]">张小明妈妈</p>
-          <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#A09E94] font-bold">P</div>
+          <p class="text-xs font-bold leading-none text-[#5A5A40]">{{ displayName }}</p>
+          <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#5A5A40] font-bold text-sm">
+            {{ avatarLetter }}
+          </div>
         </div>
       </header>
       <main class="flex-1 overflow-y-auto bg-[#FDFCF8] p-8">
@@ -58,11 +60,25 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { Baby, Sun, Home, MessageSquare, Calendar, Users, LogOut } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { logout } from '../../api/auth'
+import request from '../../utils/request'
 
 const router = useRouter()
+const user = ref<any>(null)
+
+const displayName = computed(() => user.value?.realName || user.value?.username || '家长')
+const avatarLetter = computed(() => displayName.value.charAt(0))
+
+onMounted(async () => {
+  try {
+    const res: any = await request.get('/api/auth/current')
+    user.value = res.data
+  } catch { /* session expired */ }
+})
+
 const handleLogout = async () => {
   await logout()
   router.push('/login')

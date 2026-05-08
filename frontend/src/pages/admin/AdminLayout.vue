@@ -51,8 +51,10 @@
       <header class="h-16 bg-white border-b border-[#EFE9E1] flex items-center justify-between px-8 shrink-0 shadow-sm">
         <h2 class="text-xl font-serif italic text-[#5A5A40]">管理后台</h2>
         <div class="flex items-center gap-3 border-l pl-6 border-[#EFE9E1]">
-          <p class="text-xs font-bold leading-none text-[#5A5A40]">系统管理员</p>
-          <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#A09E94] font-bold">A</div>
+          <p class="text-xs font-bold leading-none text-[#5A5A40]">{{ displayName }}</p>
+          <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#5A5A40] font-bold text-sm">
+            {{ avatarLetter }}
+          </div>
         </div>
       </header>
       <!-- 子路由出口 -->
@@ -64,11 +66,25 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { LayoutDashboard, Users, School, Newspaper, MessageSquareWarning, ShieldAlert, LogOut, CalendarDays } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { logout } from '../../api/auth'
+import request from '../../utils/request'
 
 const router = useRouter()
+const user = ref<any>(null)
+
+const displayName  = computed(() => user.value?.realName || user.value?.username || '管理员')
+const avatarLetter = computed(() => displayName.value.charAt(0))
+
+onMounted(async () => {
+  try {
+    const res: any = await request.get('/api/auth/current')
+    user.value = res.data
+  } catch { /* ignore */ }
+})
+
 const handleLogout = async () => {
   await logout()
   router.push('/login')

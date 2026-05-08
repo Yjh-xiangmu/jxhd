@@ -82,22 +82,16 @@ public class StudentController {
     }
 
     @DeleteMapping("/unbind-parent/{bindId}")
-    public Result<Void> unbindParent(@PathVariable Long bindId, HttpSession session, HttpServletRequest request) {
+    public Result<Void> unbindParent(@PathVariable Long bindId) {
         studentService.unbindParent(bindId);
-        User user = (User) session.getAttribute("currentUser");
-        logService.record(user, "家长绑定", "解除绑定", "绑定关系ID：" + bindId, request);
         return Result.success();
     }
 
     @PutMapping("/audit-bind/{bindId}")
-    public Result<Void> auditBind(@PathVariable Long bindId, @RequestBody Map<String, Object> body,
-                                  HttpSession session, HttpServletRequest request) {
+    public Result<Void> auditBind(@PathVariable Long bindId, @RequestBody Map<String, Object> body) {
         Integer status    = (Integer) body.get("status");
         Long    auditorId = Long.valueOf(body.get("auditorId").toString());
         studentService.auditBind(bindId, status, auditorId);
-        User user = (User) session.getAttribute("currentUser");
-        String action = status == 1 ? "审核通过" : "审核拒绝";
-        logService.record(user, "家长绑定", action, "绑定关系ID：" + bindId, request);
         return Result.success();
     }
 }

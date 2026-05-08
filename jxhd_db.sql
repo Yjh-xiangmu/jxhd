@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 09/05/2026 02:22:15
+ Date: 09/05/2026 02:55:43
 */
 
 SET NAMES utf8mb4;
@@ -155,9 +155,12 @@ CREATE TABLE `forum_post`  (
 -- Records of forum_post
 -- ----------------------------
 INSERT INTO `forum_post` VALUES (1, 4, 'parent', '孩子不吃饭', '孩子不吃饭', NULL, 1, 1, '2026-05-09 01:32:57');
-INSERT INTO `forum_post` VALUES (2, 1, 'admin', '测试', '测试', NULL, 1, 0, '2026-05-09 01:33:27');
+INSERT INTO `forum_post` VALUES (2, 1, 'admin', '测试', '测试', NULL, 1, 2, '2026-05-09 01:33:27');
 INSERT INTO `forum_post` VALUES (3, 2, 'teacher', '【活动总结】测试', '测试活动', '[\"/uploads/88383d426bb84eecb317faf9197f2395.png\"]', 0, 0, '2026-05-09 02:19:13');
 INSERT INTO `forum_post` VALUES (5, 2, 'teacher', '测试多图', '多图', '[\"/uploads/bbdf786f36e945a4ba16354945377f67.png\", \"/uploads/449af46bd4c5483abd7fea47f25e7d90.png\", \"/uploads/7b5475114c684743b9ef24ac6a925264.png\"]', 0, 0, '2026-05-09 02:20:36');
+INSERT INTO `forum_post` VALUES (6, 2, 'teacher', '测试日志', '测试', NULL, 0, 0, '2026-05-09 02:49:35');
+INSERT INTO `forum_post` VALUES (8, 2, 'teacher', '测试日志', '测试', NULL, 0, 0, '2026-05-09 02:55:01');
+INSERT INTO `forum_post` VALUES (9, 2, 'teacher', '【活动总结】测试', '测试日志', NULL, 0, 0, '2026-05-09 02:55:08');
 
 -- ----------------------------
 -- Table structure for forum_reply
@@ -178,6 +181,8 @@ CREATE TABLE `forum_reply`  (
 -- Records of forum_reply
 -- ----------------------------
 INSERT INTO `forum_reply` VALUES (1, 1, 1, 'admin', 'ennn', '2026-05-09 01:33:17');
+INSERT INTO `forum_reply` VALUES (2, 2, 2, 'teacher', '测试日志', '2026-05-09 02:50:21');
+INSERT INTO `forum_reply` VALUES (3, 2, 2, 'teacher', '测试1', '2026-05-09 02:50:26');
 
 -- ----------------------------
 -- Table structure for growth_record
@@ -288,12 +293,10 @@ CREATE TABLE `sys_operation_log`  (
 -- ----------------------------
 -- Records of sys_operation_log
 -- ----------------------------
-INSERT INTO `sys_operation_log` VALUES (1, 4, 'parent1', '登录系统', '登录', '用户登录', '0:0:0:0:0:0:0:1', '2026-05-09 02:08:27');
-INSERT INTO `sys_operation_log` VALUES (2, 4, 'parent1', '退出系统', '登录', '用户登出', '0:0:0:0:0:0:0:1', '2026-05-09 02:08:45');
-INSERT INTO `sys_operation_log` VALUES (3, 1, 'admin', '退出系统', '登录', '用户登出', '0:0:0:0:0:0:0:1', '2026-05-09 02:09:16');
-INSERT INTO `sys_operation_log` VALUES (4, 2, 'teacher1', '退出系统', '登录', '用户登出', '0:0:0:0:0:0:0:1', '2026-05-09 02:09:45');
-INSERT INTO `sys_operation_log` VALUES (5, 2, 'teacher1', '登录系统', '登录', '用户登录', '0:0:0:0:0:0:0:1', '2026-05-09 02:10:41');
-INSERT INTO `sys_operation_log` VALUES (6, 2, 'teacher1', '登录系统', '登录', '用户登录', '0:0:0:0:0:0:0:1', '2026-05-09 02:18:41');
+INSERT INTO `sys_operation_log` VALUES (10, 2, 'teacher1', '发表回复', '论坛', '帖子：测试', '0:0:0:0:0:0:0:1', '2026-05-09 02:50:21');
+INSERT INTO `sys_operation_log` VALUES (11, 2, 'teacher1', '删除帖子', '论坛', '标题：【活动总结】测试', '0:0:0:0:0:0:0:1', '2026-05-09 02:54:54');
+INSERT INTO `sys_operation_log` VALUES (12, 2, 'teacher1', '发布帖子', '论坛', '标题：测试日志', '0:0:0:0:0:0:0:1', '2026-05-09 02:55:01');
+INSERT INTO `sys_operation_log` VALUES (13, 2, 'teacher1', '发布帖子', '活动总结', '标题：【活动总结】测试', '0:0:0:0:0:0:0:1', '2026-05-09 02:55:08');
 
 -- ----------------------------
 -- Table structure for sys_parent_student
@@ -394,5 +397,6 @@ INSERT INTO `sys_user` VALUES (3, 'teacher2', '123456', 'teacher', '王老师', 
 INSERT INTO `sys_user` VALUES (4, 'parent1', '123456', 'parent', '张小明妈妈', '13800000004', NULL, 1, '2026-05-08 18:30:08', '2026-05-08 18:30:08');
 INSERT INTO `sys_user` VALUES (5, 'parent2', '123456', 'parent', '李艺彤爸爸', '13800000005', NULL, 1, '2026-05-08 18:30:08', '2026-05-08 18:30:08');
 INSERT INTO `sys_user` VALUES (6, 'parent3', '123456', 'parent', '王浩宇爸爸', '111111', NULL, 1, '2026-05-09 01:46:58', '2026-05-09 01:46:58');
+INSERT INTO `sys_user` VALUES (7, 'parent4', '123456', 'parent', '测试', '122222', NULL, 1, '2026-05-09 02:33:56', '2026-05-09 02:33:56');
 
 SET FOREIGN_KEY_CHECKS = 1;

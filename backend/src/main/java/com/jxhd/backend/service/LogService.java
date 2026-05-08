@@ -5,7 +5,6 @@ import com.jxhd.backend.entity.User;
 import com.jxhd.backend.mapper.OperationLogMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ public class LogService {
 
     private final OperationLogMapper logMapper;
 
-    @Async
     public void record(User user, String module, String action, String detail, HttpServletRequest request) {
         try {
             OperationLog log = new OperationLog();
