@@ -1,0 +1,18 @@
+package com.jxhd.backend.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("sys_class")
+public class SysClass {
+    private Long id;
+    private String className;
+    private String grade;
+    private Long headTeacherId;
+    private String semester;
+    private Integer status;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+}

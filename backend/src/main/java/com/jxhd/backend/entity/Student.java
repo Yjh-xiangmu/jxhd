@@ -1,21 +1,20 @@
 package com.jxhd.backend.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_user")
-public class User {
+@TableName("sys_student")
+public class Student {
     private Long id;
-    private String username;
-    @JsonIgnore  // 密码不返回给前端
-    private String password;
-    private String role;
-    private String realName;
-    private String phone;
+    private String name;
+    private Integer gender;
+    private LocalDate birthday;
+    private Long classId;
     private String avatar;
+    private String remark;
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

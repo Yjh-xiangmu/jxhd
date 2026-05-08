@@ -1,5 +1,6 @@
 <template>
   <div class="flex h-screen bg-[#FDFCF8] text-[#333322] overflow-hidden font-sans">
+    <!-- 侧边栏 -->
     <aside class="w-64 bg-[#F5F2ED] border-r border-[#EFE9E1] flex flex-col p-6 gap-6 shrink-0">
       <div class="flex items-center gap-3 mb-2">
         <div class="w-10 h-10 bg-[#5A5A40] rounded-xl flex items-center justify-center shrink-0">
@@ -15,8 +16,7 @@
 
       <nav class="flex-1 overflow-y-auto space-y-2">
         <p class="text-[10px] uppercase tracking-widest text-[#A09E94] font-bold mb-4">Core Functions</p>
-
-        <router-link to="/admin" exact-active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
+        <router-link to="/admin/dashboard" active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
           <LayoutDashboard class="w-5 h-5 shrink-0" /> 总览数据
         </router-link>
         <router-link to="/admin/users" active-class="bg-[#5A5A40] text-white shadow-md" class="nav-item">
@@ -43,18 +43,16 @@
       </div>
     </aside>
 
+    <!-- 主内容区 -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <header class="h-16 bg-white border-b border-[#EFE9E1] flex items-center justify-between px-8 shrink-0 shadow-sm">
         <h2 class="text-xl font-serif italic text-[#5A5A40]">管理后台</h2>
-        <div class="flex items-center gap-6">
-          <div class="flex items-center gap-3 border-l pl-6 border-[#EFE9E1]">
-            <div class="text-right">
-              <p class="text-xs font-bold leading-none text-[#5A5A40]">系统管理员</p>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#A09E94] font-bold">A</div>
-          </div>
+        <div class="flex items-center gap-3 border-l pl-6 border-[#EFE9E1]">
+          <p class="text-xs font-bold leading-none text-[#5A5A40]">系统管理员</p>
+          <div class="w-10 h-10 rounded-full bg-[#E5E0D8] border-2 border-white flex items-center justify-center text-[#A09E94] font-bold">A</div>
         </div>
       </header>
+      <!-- 子路由出口 -->
       <main class="flex-1 overflow-y-auto bg-[#FDFCF8] p-8">
         <router-view></router-view>
       </main>
@@ -63,15 +61,19 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, Users, School, Newspaper, MessageSquareWarning, ShieldAlert, LogOut } from 'lucide-vue-next';
-import { useRouter } from 'vue-router';
-const router = useRouter();
-const handleLogout = () => router.push('/login');
+import { LayoutDashboard, Users, School, Newspaper, MessageSquareWarning, ShieldAlert, LogOut } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { logout } from '../../api/auth'
+
+const router = useRouter()
+const handleLogout = async () => {
+  await logout()
+  router.push('/login')
+}
 </script>
 
 <style scoped>
 @reference "tailwindcss";
-
 .nav-item {
   @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-[#7A7A6A] hover:bg-[#EAE5DD];
 }

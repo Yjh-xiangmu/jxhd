@@ -1,38 +1,48 @@
 package com.jxhd.backend.controller;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
+import com.jxhd.backend.common.Result;
+import com.jxhd.backend.dto.LoginDTO;
 import com.jxhd.backend.entity.User;
-import com.jxhd.backend.mapper.UserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jxhd.backend.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin // 允许前端跨域访问
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserService userService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User loginUser) {
-        Map<String, Object> result = new HashMap<>();
+    public Result<Map<String, Object>> login(@RequestBody LoginDTO dto, HttpSession session) {
+        User user = userService.login(dto.getUsername(), dto.getPassword());
+        // 将用户信息存入Session
+        session.setAttribute("currentUser", user);
 
-        QueryWrapper<User> query = new QueryWrapper<>();
-        query.eq("username", loginUser.getUsername())
-                .eq("password", loginUser.getPassword());
+        Map<String, Object> data = new HashMap<>();
+        data.put("user", user);
+        data.put("sessionId", session.getId());
+        return Result.success(data);
+    }
 
-        User user = userMapper.selectOne(query);
+    @PostMapping("/logout")
+    public Result<Void> logout(HttpSession session) {
+        session.invalidate();
+        return Result.success();
+    }
 
-        if (user != null) {
-            result.put("code", 200);
-            result.put("msg", "登录成功");
-            result.put("data", user);
-        } else {
-            result.put("code", 400);
-            result.put("msg", "账号或密码错误");
+    @GetMapping("/current")
+    public Result<User> current(HttpSession session) {
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null) {
+            return Result.error(401, "未登录");
         }
-        return result;
+        return Result.success(user);
     }
 }
