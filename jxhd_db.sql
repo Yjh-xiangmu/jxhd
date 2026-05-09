@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 09/05/2026 02:55:43
+ Date: 09/05/2026 17:38:25
 */
 
 SET NAMES utf8mb4;
@@ -130,7 +130,7 @@ CREATE TABLE `class_schedule`  (
 -- ----------------------------
 -- Records of class_schedule
 -- ----------------------------
-INSERT INTO `class_schedule` VALUES (1, 1, 1, 1, '艺术手工', 2, '10:00', '10:40', '2026-05-09 00:42:56', '2026-05-09 00:42:56');
+INSERT INTO `class_schedule` VALUES (2, 1, 1, 1, '数学', 2, '10:00', '10:40', '2026-05-09 17:34:01', '2026-05-09 17:34:01');
 
 -- ----------------------------
 -- Table structure for forum_post
@@ -161,6 +161,7 @@ INSERT INTO `forum_post` VALUES (5, 2, 'teacher', '测试多图', '多图', '[\"
 INSERT INTO `forum_post` VALUES (6, 2, 'teacher', '测试日志', '测试', NULL, 0, 0, '2026-05-09 02:49:35');
 INSERT INTO `forum_post` VALUES (8, 2, 'teacher', '测试日志', '测试', NULL, 0, 0, '2026-05-09 02:55:01');
 INSERT INTO `forum_post` VALUES (9, 2, 'teacher', '【活动总结】测试', '测试日志', NULL, 0, 0, '2026-05-09 02:55:08');
+INSERT INTO `forum_post` VALUES (10, 2, 'teacher', '测试多图', '11', '[\"/uploads/7c7be101bbe74b3bbb962b41acbe138f.png\", \"/uploads/94a46faa07d44ae0ba6d576c731509a1.png\", \"/uploads/6bcb46af20034b598d5771df773605b9.png\"]', 0, 0, '2026-05-09 16:32:23');
 
 -- ----------------------------
 -- Table structure for forum_reply
@@ -297,6 +298,7 @@ INSERT INTO `sys_operation_log` VALUES (10, 2, 'teacher1', '发表回复', '论�
 INSERT INTO `sys_operation_log` VALUES (11, 2, 'teacher1', '删除帖子', '论坛', '标题：【活动总结】测试', '0:0:0:0:0:0:0:1', '2026-05-09 02:54:54');
 INSERT INTO `sys_operation_log` VALUES (12, 2, 'teacher1', '发布帖子', '论坛', '标题：测试日志', '0:0:0:0:0:0:0:1', '2026-05-09 02:55:01');
 INSERT INTO `sys_operation_log` VALUES (13, 2, 'teacher1', '发布帖子', '活动总结', '标题：【活动总结】测试', '0:0:0:0:0:0:0:1', '2026-05-09 02:55:08');
+INSERT INTO `sys_operation_log` VALUES (14, 2, 'teacher1', '发布帖子', '论坛', '标题：测试多图', '0:0:0:0:0:0:0:1', '2026-05-09 16:32:23');
 
 -- ----------------------------
 -- Table structure for sys_parent_student
